@@ -13,3 +13,13 @@ Specifically,
 
 [rmarkdown]: http://rmarkdown.rstudio.com/rmarkdown_websites.htm
 [rstudio]: https://www.rstudio.com/products/rstudio/download/preview/
+
+#Wednesday Bootcamp
+
+Click on this [link](first-analysis.html) to see my results.
+
+Detect Batch effect Report 1. Click on this [link](ExerciseBootcamp07122017.html) to see my results.
+
+Detect Batch effect Report 2.Click on this [link](Exercise2Bootcamp07122017.html) to see my results.
+
+
