@@ -1,0 +1,87 @@
+---
+title: "Detect Batch effect Report 2"
+author: "Constanza Silva"
+date: "July 12, 2017"
+output: html_document
+---
+#Wednesday Bootcamp Report 1
+
+```{r setup, include=FALSE}
+# To run DataCamp tutorials on your computer, install the packages below
+#install.packages("nasaweather")
+#install.packages("dplyr")
+#install.packages("ggvis")
+
+# To run the batch effects case study, install the packages below
+source("http://bioconductor.org/biocLite.R")
+#biocLite("Biobase")
+#biocLite("genefilter")
+devtools::install_github("genomicsclass/GSE5859")
+```
+
+
+```{r}
+library(Biobase)
+#install.packages("rafalib")
+library(rafalib)
+library(genefilter)
+library(GSE5859)
+data(GSE5859)
+```
+
+## gene expression levels  
+```{r}
+geneExpression = exprs(e)
+```
+
+## print date info
+```{r}
+sampleInfo = pData(e)
+head(sampleInfo$date)
+```
+## Output: print a table of year vs ethnic groups
+```{r}
+year = factor( format(sampleInfo$date,"%y") ) #format () function is to statify date using in this case "data" as a variable. "%y" is to accesss to the year of the sampleInfo$date.
+#stratify the data by data they were colected. The majority of the Asian samples (ASN) were collected on 2005.
+tab = table(year,sampleInfo$ethnicity)
+print(tab)
+```
+
+## remove a redundant sample
+```{r}
+cors <- cor(exprs(e))
+Pairs=which(abs(cors)>0.9999,arr.ind=TRUE)
+out = Pairs[which(Pairs[,1]<Pairs[,2]),,drop=FALSE]
+if(length(out[,2])>0) e=e[,-out[2]]
+
+# remove control probes from the analysis
+out <- grep("AFFX",featureNames(e))
+e <- e[-out,]
+```
+
+
+##Create a detrended gene expression data matrix and 
+## extract the information on dates and ethnic group 
+```{r}
+y <- exprs(e)-rowMeans(exprs(e))
+dates <- pData(e)$date
+eth <- pData(e)$ethnicity
+
+```
+
+# perform PCA
+```{r}
+s <- svd(y)
+# output: plot MDS plot of PC1 and PC2 for ethnic groups
+cols = as.numeric(eth)
+mypar()
+
+plot(s$v[,1],s$v[,2],col=cols,pch=16, xlab="PC1",ylab="PC2");legend("bottomleft",levels(eth),col=seq(along=levels(eth)),pch=16);title("Ethnic groups")
+ 
+
+# output: plot PC1 and PC2 for years
+cols = as.numeric(year)
+mypar()
+plot(s$v[,1],s$v[,2],col=cols,pch=16, xlab="PC1",ylab="PC2");legend("bottomleft",levels(year),col=seq(along=levels(year)),pch=16);title("Years")
+```
+
